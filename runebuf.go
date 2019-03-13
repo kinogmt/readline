@@ -603,14 +603,15 @@ func (r *RuneBuffer) cleanOutput(w io.Writer, idxLine int) {
 	} else {
 		buf.Write([]byte("\033[J")) // just like ^k :)
 		if idxLine == 0 {
-			buf.WriteString(strings.Repeat("\033[D", len(r.buf) + r.promptLen()))
+			buf.WriteString(strings.Repeat("\033[D", r.idx + r.promptLen()))
 			buf.Write([]byte("\033[J"))
 		} else {
-			buf.WriteString(strings.Repeat("\033[D", len(r.buf) + r.promptLen()))
-			buf.Write([]byte("\033[J"))
 			for i := 0; i < idxLine; i++ {
 				io.WriteString(buf, "\033[2K\r\033[A")
 			}
+			io.WriteString(buf, "\033[2K\r")
+			//idx0 := r.idx - idxLine * r.width
+			//io.WriteString(buf, strings.Repeat("\033[D", idx0 + r.promptLen()))
 		}
 	}
 	buf.Flush()
