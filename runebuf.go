@@ -471,15 +471,6 @@ func (r *RuneBuffer) SetOffset(offset string) {
 	r.Unlock()
 }
 
-// Print prompt: only when buffer is clean
-func (r *RuneBuffer) PrintPrompt() {
-	r.Lock()
-	buf := bytes.NewBuffer(nil)
-	buf.WriteString(string(r.prompt))
-	r.w.Write(buf.Bytes())
-	r.Unlock()
-}
-
 func (r *RuneBuffer) print() {
 	r.w.Write(r.output())
 	r.hadClean = false
