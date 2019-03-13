@@ -465,27 +465,15 @@ func (r *RuneBuffer) Refresh(f func()) {
 	r.print()
 }
 
-func (r *RuneBuffer) Refresh2(f func()) {
-	r.Lock()
-	defer r.Unlock()
-
-	if !r.interactive {
-		if f != nil {
-			f()
-		}
-		return
-	}
-
-	//r.clean()
-	if f != nil {
-		f()
-	}
-	r.print()
-}
-
 func (r *RuneBuffer) SetOffset(offset string) {
 	r.Lock()
 	r.offset = offset
+	r.Unlock()
+}
+
+func (r *RuneBuffer) Print() {
+	r.Lock()
+	r.print()
 	r.Unlock()
 }
 
@@ -615,13 +603,14 @@ func (r *RuneBuffer) cleanOutput(w io.Writer, idxLine int) {
 	} else {
 		buf.Write([]byte("\033[J")) // just like ^k :)
 		if idxLine == 0 {
-			buf.WriteString("\033[2K")
-			buf.WriteString("\r")
+			buf.WriteString(strings.Repeat("\033[D", len(r.buf) + r.promptLen()))
+			buf.Write([]byte("\033[J"))
 		} else {
+			buf.WriteString(strings.Repeat("\033[D", len(r.buf) + r.promptLen()))
+			buf.Write([]byte("\033[J"))
 			for i := 0; i < idxLine; i++ {
 				io.WriteString(buf, "\033[2K\r\033[A")
 			}
-			io.WriteString(buf, "\033[2K\r")
 		}
 	}
 	buf.Flush()

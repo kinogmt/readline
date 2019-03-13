@@ -386,7 +386,7 @@ func (o *Operation) Runes() ([]rune, error) {
 	}
 
 	//o.buf.Refresh(nil) // print prompt
-	o.buf.Refresh2(nil) // print prompt
+	o.buf.Print() // print prompt without cleanup
 	o.t.KickRead()
 	select {
 	case r := <-o.outchan:
