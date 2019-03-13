@@ -465,6 +465,24 @@ func (r *RuneBuffer) Refresh(f func()) {
 	r.print()
 }
 
+func (r *RuneBuffer) Refresh2(f func()) {
+	r.Lock()
+	defer r.Unlock()
+
+	if !r.interactive {
+		if f != nil {
+			f()
+		}
+		return
+	}
+
+	//r.clean()
+	if f != nil {
+		f()
+	}
+	r.print()
+}
+
 func (r *RuneBuffer) SetOffset(offset string) {
 	r.Lock()
 	r.offset = offset
